@@ -2,7 +2,6 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 
-
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {files: ["**/*.{js,mjs,cjs,ts}"]},
@@ -10,10 +9,11 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {rules: {
-      "no-unused-vars": "warn",
-      "no-undef": "warn",
+    "no-unused-vars": "warn",
+    "no-undef": "warn",
+    "semi": [2, "always"],
+    "indent": ["error", 2],
+    "eol-last": ["error", "always"],
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
   }},
-  {"env": {
-    "node": true,
-  }}
 ];
