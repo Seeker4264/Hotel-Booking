@@ -10,4 +10,5 @@ export interface user {
   "username": string;
   "email": string;
   "gender": gender;
+  "password": string;
 };

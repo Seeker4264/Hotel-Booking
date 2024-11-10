@@ -1,16 +1,29 @@
+/* eslint-disable no-undef */
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 
+import authRouter from './controllers/authController';
 import userRouter from './controllers/userController';
+import roomRouter from './controllers/roomController';
 
 const app = express();
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  headers: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 8080;
 
+app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
+app.use("/api/rooms", roomRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
