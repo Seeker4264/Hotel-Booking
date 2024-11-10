@@ -9,6 +9,14 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {rules: {
+    "keyword-spacing": ["error", { "overrides": {
+      "if": { "after": true },
+      "for": { "after": true },
+      "while": { "after": true },
+      "static": { "after": true },
+      "as": { "after": true }
+    }}],
+    "space-before-function-paren": ["error", "never"],
     "no-unused-vars": "warn",
     "no-undef": "warn",
     "semi": [2, "always"],
