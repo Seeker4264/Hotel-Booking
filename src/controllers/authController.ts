@@ -1,5 +1,7 @@
+/* eslint-disable no-undef */
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import express from 'express';
 
 import { ErrorHandler } from '../lib/errorHandler';
@@ -17,7 +19,6 @@ router.post("/register", async(req, res) => {
   
     if (!auth) throw new ErrorHandler("validation error", "user already exist exist");
   
-    // eslint-disable-next-line no-undef
     const hashedPassword = await bcrypt.hash(user.password, Number(process.env.SALT_ROUNDS));
   
     await pool.query(`
@@ -31,7 +32,7 @@ router.post("/register", async(req, res) => {
 
     if (error instanceof Error) message = error.message;
 
-    res.status(404).send(message);
+    res.status(409).send(message);
   }
 });
 
@@ -40,7 +41,15 @@ router.post("/login", async(req, res) => {
     const user = req.body;
     const auth = await AuthRepository.login(user);
 
-    res.status(200).send(auth);
+    const token = jwt.sign(auth, String(process.env.JWT_SECRET), {
+      expiresIn: "1h"
+    });
+
+    res.cookie('access_token', token, {
+      httpOnly: true, // only accessible from the server
+      maxAge: 1000 * 60 * 60
+    });
+    res.status(200).send({ auth, token });
   } catch (error) {
     let message;
 
@@ -51,7 +60,25 @@ router.post("/login", async(req, res) => {
 });
 
 router.post("/logout", async(_req, res) => {
-  res.send("TBH");
+  res.clearCookie("access_token").send("Logged out successfully");
+});
+
+router.get("/protected", async(req, res) => {
+  try {
+    const token = req.cookies.access_token;
+  
+    if (!token) throw new ErrorHandler("Auth error", "access denied");
+  
+    const data = jwt.verify(token, String(process.env.JWT_SECRET));
+    
+    res.status(200).send({ message: "Access granted", data});
+  } catch (error) {
+    let message;
+
+    if (error instanceof Error) message = error.message;
+
+    res.status(401).send(message);
+  }
 });
 
 export default router;

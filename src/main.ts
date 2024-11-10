@@ -2,12 +2,14 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import authRouter from './controllers/authController';
 import userRouter from './controllers/userController';
 import roomRouter from './controllers/roomController';
 
 const app = express();
+app.disable('x-powered-by');
 
 const corsOptions = {
   origin: process.env.CORS_ORIGIN,
@@ -16,6 +18,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
