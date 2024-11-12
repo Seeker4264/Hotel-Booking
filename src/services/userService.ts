@@ -11,7 +11,15 @@ export async function getAllUsers() {
     SELECT * FROM public.users
   `);
 
-  return response.rows;
+  const result = [];
+
+  for (let i = 0; i < response.rows.length; i++) {
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+    const { password, ...publicUser } = response.rows[i];
+    result.push(publicUser);
+  };
+
+  return result;
 };
 
 export async function getUser(id: number) {
@@ -21,8 +29,11 @@ export async function getUser(id: number) {
   `);
 
   if (response.rows.length === 0) throw new ErrorHandler("404 not found", "user doesn't exist");
+
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  const { password, ...user } = response.rows[0];
   
-  return response.rows[0];
+  return user;
 };
 
 export async function postUser(user: user) {

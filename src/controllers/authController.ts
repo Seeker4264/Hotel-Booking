@@ -47,7 +47,7 @@ router.post("/login", async(req, res) => {
 
     res.cookie('access_token', token, {
       httpOnly: true, // only accessible from the server
-      maxAge: 1000 * 60 * 60
+      maxAge: 1000 * 60 * 60,
     });
     res.status(200).send({ auth, token });
   } catch (error) {
@@ -71,7 +71,7 @@ router.get("/protected", async(req, res) => {
   
     const data = jwt.verify(token, String(process.env.JWT_SECRET));
     
-    res.status(200).send({ message: "Access granted", data});
+    res.status(200).send({ message: "Access granted", data });
   } catch (error) {
     let message;
 
