@@ -17,7 +17,7 @@ router.get("/", async(_req, res) => {
 
 router.get("/:id", async(req, res) => {
   try {
-    const response = await getUser(Number(req.params.id));
+    const response = await getUser(req.params.id);
     
     res.status(200).json(response);
   } catch (error) {
@@ -45,7 +45,7 @@ router.post("/", async(req, res) => {
 
 router.put("/:id", async(req, res) => {
   try {
-    const response = await updateUser(req.body, Number(req.params.id));
+    const response = await updateUser(req.body, req.params.id);
 
     res.status(200).send(response);
   } catch (error) {
@@ -59,7 +59,7 @@ router.put("/:id", async(req, res) => {
 
 router.delete("/:id", async(req, res) => {
   try {
-    const response = await deleteUser(Number(req.params.id));
+    const response = await deleteUser(req.params.id);
   
     res.status(200).send(response);
   } catch (error) {
