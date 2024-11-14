@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import authRouter from './controllers/authController';
 import userRouter from './controllers/userController';
 import roomRouter from './controllers/roomController';
+import bookingRouter from './controllers/bookingController';
 
 const app = express();
 app.disable('x-powered-by');
@@ -27,6 +28,7 @@ const PORT = process.env.PORT || 8080;
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/rooms", roomRouter);
+app.use("/api/bookings", bookingRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
