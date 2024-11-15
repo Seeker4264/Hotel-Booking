@@ -4,6 +4,9 @@ import { pool } from "../config/db";
 
 import { booking } from "../models/bookingModel";
 
+import { verifyDates } from '../lib/dateUtils';
+import { dateFormat } from '../lib/dateUtils';
+
 export async function getAllBookings() {
   const response = await pool.query(`
     SELECT * FROM public.bookings
@@ -20,7 +23,7 @@ export async function getBooking(id: number) {
 
   if (response.rows.length === 0) throw new ErrorHandler("404 not found", "booking doesn't exist");
   
-  return response.rows;
+  return response.rows[0];
 };
 
 export async function postBooking(booking: booking) {
@@ -37,6 +40,23 @@ export async function postBooking(booking: booking) {
   `);
 
   if (roomCheck.rows.length === 0) throw new ErrorHandler("404 not found", "room doesn't exist");
+
+  const bookingPool = await pool.query(`
+    SELECT * FROM public.bookings
+    WHERE room_id = '${booking.room_id}'
+  `);
+
+  if (bookingPool.rows.length !== 0) {
+    for (let index = 0; index < bookingPool.rows.length; index++) {
+      if (!verifyDates(
+        booking.start_date,
+        booking.end_date,
+        dateFormat(bookingPool.rows[index].start_date),
+        dateFormat(bookingPool.rows[index].end_date))) { 
+        throw new ErrorHandler("validation error", "invalid dates");
+      };
+    };
+  };
 
   await pool.query(`
     INSERT INTO public.bookings(user_id, room_id, start_date, end_date)
@@ -67,6 +87,26 @@ export async function updateBooking(booking: booking, id: number) {
   `);
 
   if (roomCheck.rows.length === 0) throw new ErrorHandler("404 not found", "room doesn't exist");
+
+  const bookingPool = await pool.query(`
+    SELECT * FROM public.bookings
+    WHERE room_id = '${booking.room_id}'
+  `);
+
+  if (bookingPool.rows.length !== 0) {
+    for (let index = 0; index < bookingPool.rows.length; index++) {
+      if (id === bookingPool.rows[index].booking_id) {
+        continue;
+      };
+      if (!verifyDates(
+        booking.start_date,
+        booking.end_date,
+        dateFormat(bookingPool.rows[index].start_date),
+        dateFormat(bookingPool.rows[index].end_date))) { 
+        throw new ErrorHandler("validation error", "invalid dates");
+      };
+    };
+  };
 
   await pool.query(`
     UPDATE public.bookings

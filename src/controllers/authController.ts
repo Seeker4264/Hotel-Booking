@@ -8,8 +8,6 @@ import { ErrorHandler } from '../lib/errorHandler';
 import { pool } from '../config/db';
 import { AuthRepository } from '../repositories/authRepository';
 
-//import { user } from '../models/userModel';
-
 const router = express.Router();
 
 router.post("/register", async(req, res) => {
